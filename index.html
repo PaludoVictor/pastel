@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modelagem Matemática - Precificação de um Pastel | IFSC Chapecó</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            ifsc: {
+              green: '#2e7d32',
+              red: '#c62828',
+              dark: '#1b5e20'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; font-size: 12px; }
+      .shadow-md, .shadow-xl { box-shadow: none !important; border: 1px solid #e2e8f0; }
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans antialiased selection:bg-amber-200">
+
+  <!-- Header Institucional -->
+  <header class="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 text-white shadow-lg border-b-4 border-amber-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-700 text-emerald-100 border border-emerald-500">
+              IFSC — Câmpus Chapecó
+            </span>
+            <span class="text-xs font-medium text-amber-200">
+              Técnico Integrado em Informática • Disciplina: Matemática
+            </span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
+            🥟 Modelagem Matemática da Precificação de um Pastel
+          </h1>
+          <p class="text-sm text-amber-100 mt-1">
+            Pesquisa de campo, cálculo proporcional de custos, análise ABRASEL e inequação do Ponto de Equilíbrio (Break-Even).
+          </p>
+        </div>
+
+        <!-- Equipe & Ações -->
+        <div class="flex flex-col sm:flex-row md:flex-col items-start md:items-end justify-between gap-2">
+          <div class="text-xs text-amber-200 bg-amber-900/50 p-2.5 rounded-lg border border-amber-500/30 backdrop-blur-sm">
+            <p class="font-bold text-amber-300 mb-0.5">Estudantes Pesquisadores:</p>
+            <p>Brenda Dick, Caroline Matte, Eloisa dos Santos, Lucas Fernandes e Victor Peludo</p>
+          </div>
+          <div class="flex gap-2 no-print">
+            <button id="btnRestaurar" class="px-3 py-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-amber-950 rounded shadow transition flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Restaurar Dados Originais
+            </button>
+            <button onclick="window.print()" class="px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded border border-white/20 transition flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Imprimir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Visão Resumida das Métricas Chaves (KPI Cards) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
+          <span>Custo Variável Unitário (CP)</span>
+          <span class="text-amber-600 bg-amber-100 p-1.5 rounded-lg">🥟</span>
+        </div>
+        <div class="mt-2">
+          <div id="kpiCp" class="text-3xl font-extrabold text-slate-800">R$ 1,04</div>
+          <p class="text-xs text-slate-500 mt-1">Custo por unidade produzida</p>
+        </div>
+        <div class="text-[11px] text-amber-700 bg-amber-50 rounded px-2 py-1 mt-3 border border-amber-200">
+          Receita base: <strong>R$ <span id="kpiTotalReceita">15,68</span></strong> / <span id="kpiRendimento">15</span> pastéis
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
+          <span>Preço de Venda Praticado (Pv)</span>
+          <span class="text-emerald-600 bg-emerald-100 p-1.5 rounded-lg">🏷️</span>
+        </div>
+        <div class="mt-2">
+          <div id="kpiPv" class="text-3xl font-extrabold text-emerald-700">R$ 4,00</div>
+          <p class="text-xs text-slate-500 mt-1">Preço no cardápio ao cliente</p>
+        </div>
+        <div class="text-[11px] text-emerald-700 bg-emerald-50 rounded px-2 py-1 mt-3 border border-emerald-200">
+          Margem de Contribuição: <strong>R$ <span id="kpiMargem">2,96</span></strong> / un.
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
+          <span>Custo Fixo Considerado (Cf)</span>
+          <span class="text-blue-600 bg-blue-100 p-1.5 rounded-lg">📦</span>
+        </div>
+        <div class="mt-2">
+          <div id="kpiCf" class="text-3xl font-extrabold text-blue-800">R$ 15,00</div>
+          <p id="kpiCfTipo" class="text-xs text-slate-500 mt-1">Custo Fixo Operacional</p>
+        </div>
+        <div class="text-[11px] text-blue-700 bg-blue-50 rounded px-2 py-1 mt-3 border border-blue-200">
+          Gás, descartáveis ou sobras de insumo
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
+          <span>Ponto de Equilíbrio (Break-Even)</span>
+          <span class="text-purple-600 bg-purple-100 p-1.5 rounded-lg">⚖️</span>
+        </div>
+        <div class="mt-2">
+          <div id="kpiBreakEven" class="text-3xl font-extrabold text-purple-700">6 pastéis</div>
+          <p class="text-xs text-slate-500 mt-1">x > <span id="kpiBreakEvenExato">5,08</span> pastéis</p>
+        </div>
+        <div class="text-[11px] text-purple-700 bg-purple-50 rounded px-2 py-1 mt-3 border border-purple-200">
+          Volume mínimo de venda para gerar lucro
+        </div>
+      </div>
+    </section>
+
+    <!-- Grade: Tabela de Insumos da Receita & Parâmetros de Mercado -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Seção Esquerda: Tabela de Ingredientes e Custos Proporcionais -->
+      <section class="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <span>📋</span> Etapa 1 e 2: Ingredientes, Proporções e Preços de Mercado
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Valores definidos na pesquisa do grupo (Chapecó). Modifique os preços de compra para simular oscilações de mercado.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">
+            <span>Rendimento da Receita:</span>
+            <input type="number" id="inpRendimento" value="15" min="1" max="100" class="w-16 px-2 py-0.5 font-bold text-amber-900 bg-white border border-slate-300 rounded text-center focus:ring-2 focus:ring-amber-500">
+            <span>un.</span>
+          </div>
+        </div>
+
+        <!-- Tabela Responsiva dos Insumos da Massa -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Massa do Pastel (Rende a base inteira)
+            </h3>
+            <span class="text-xs font-semibold text-slate-600">Subtotal Massa: <strong id="subtotalMassa" class="text-amber-700">R$ 2,85</strong></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-slate-200 rounded-lg overflow-hidden">
+              <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                <tr>
+                  <th class="px-3 py-2">Ingrediente</th>
+                  <th class="px-3 py-2">Qtd. Receita</th>
+                  <th class="px-3 py-2">Qtd. Embalagem</th>
+                  <th class="px-3 py-2">Preço Compra (R$)</th>
+                  <th class="px-3 py-2 text-center">Fórmula Algébrica</th>
+                  <th class="px-3 py-2 text-right">Custo Proporcional</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyMassa" class="divide-y divide-slate-100">
+                <!-- Linhas preenchidas via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tabela Responsiva dos Insumos do Recheio -->
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Recheio (Carne Moída & Temperos)
+            </h3>
+            <span class="text-xs font-semibold text-slate-600">Subtotal Recheio: <strong id="subtotalRecheio" class="text-rose-700">R$ 12,83</strong></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-slate-200 rounded-lg overflow-hidden">
+              <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                <tr>
+                  <th class="px-3 py-2">Ingrediente</th>
+                  <th class="px-3 py-2">Qtd. Receita</th>
+                  <th class="px-3 py-2">Qtd. Embalagem</th>
+                  <th class="px-3 py-2">Preço Compra (R$)</th>
+                  <th class="px-3 py-2 text-center">Fórmula Algébrica</th>
+                  <th class="px-3 py-2 text-right">Custo Proporcional</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyRecheio" class="divide-y divide-slate-100">
+                <!-- Linhas preenchidas via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rodapé do Resumo dos Insumos -->
+        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-xs text-amber-900">
+            <strong>Custo Total de Ingredientes para a Receita:</strong>
+            <span class="block text-slate-600 mt-0.5">Soma dos custos proporcionais da massa e do recheio</span>
+          </div>
+          <div class="text-right">
+            <span class="text-sm font-medium text-slate-500 mr-2">Total Receita:</span>
+            <span id="custoTotalReceita" class="text-2xl font-black text-amber-800">R$ 15,68</span>
+            <span class="block text-xs font-semibold text-amber-700 mt-0.5">
+              Custo por pastel: <span id="custoUnitarioCalculado" class="font-extrabold text-amber-900">R$ 1,045</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Direita: Modelagem de Custos Fixos & Precificação ABRASEL -->
+      <section class="lg:col-span-4 space-y-6">
+
+        <!-- Card de Configuração de Custos Fixos (Modo Duplo) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+              <span>⚙️</span> Custo Fixo (Cf) — Modelagem
+            </h3>
+            <span class="text-[10px] font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Modo Duplo</span>
+          </div>
+
+          <!-- Seleção de Modo -->
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-lg text-xs font-semibold">
+            <button id="tabModoOperacional" class="py-1.5 px-2 rounded-md bg-white text-blue-700 shadow-sm transition">
+              Custo Operacional
+            </button>
+            <button id="tabModoSobras" class="py-1.5 px-2 rounded-md text-slate-600 hover:text-slate-900 transition">
+              Sobras de Insumo (Aula)
+            </button>
+          </div>
+
+          <!-- Painel Modo Operacional -->
+          <div id="painelOperacional" class="space-y-3">
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Custos estruturais e operacionais rateados para o lote (gás de cozinha, óleo para fritura por imersão, guardanapos e descartáveis).
+            </p>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Valor do Custo Fixo Operacional (R$):</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">R$</span>
+                <input type="number" id="inpCustoFixoOperacional" value="15.00" step="0.50" min="0" class="w-full pl-9 pr-3 py-2 text-sm font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Painel Modo Sobras de Embalagens (Slide 12 da Apresentação) -->
+          <div id="painelSobras" class="space-y-3 hidden">
+            <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs text-blue-900">
+              <strong class="block mb-1">Orientação do Slide 12:</strong>
+              Valor dos insumos inteiros comprados e não utilizados na primeira receita (excedente em estoque).
+            </div>
+            <div class="space-y-1.5 max-h-44 overflow-y-auto pr-1 text-[11px] text-slate-600 divide-y divide-slate-100" id="listaSobras">
+              <!-- Preenchido via JS -->
+            </div>
+            <div class="flex justify-between items-center pt-2 font-bold text-xs text-slate-800 border-t border-slate-200">
+              <span>Total das Sobras:</span>
+              <span id="totalSobrasTexto" class="text-blue-700 text-sm">R$ 103,42</span>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+            <span class="text-slate-500 font-medium">Custo Fixo Total Utilizado:</span>
+            <span id="valorCfAtivo" class="font-extrabold text-blue-800 text-base">R$ 15,00</span>
+          </div>
+        </div>
+
+        <!-- Card de Precificação ABRASEL & Preço de Venda -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+              <span>📊</span> Preço de Venda (Pv) — Regra ABRASEL
+            </h3>
+            <span class="text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Slide 14</span>
+          </div>
+
+          <p class="text-xs text-slate-500 leading-relaxed">
+            A <strong>ABRASEL</strong> recomenda que o CMV (Custo da Mercadoria Vendida) represente entre <strong>25% e 40%</strong> do preço final no cardápio.
+          </p>
+
+          <!-- Slider de CMV -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-slate-700">Porcentagem do CMV:</span>
+              <span id="txtCmvPercentual" class="text-emerald-700 font-bold">30%</span>
+            </div>
+            <input type="range" id="sliderCmv" min="20" max="45" value="30" step="1" class="w-full accent-emerald-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+              <span>20% (Alta margem)</span>
+              <span class="text-emerald-700 font-semibold">Faixa Abrasel: 25% - 40%</span>
+              <span>45% (Baixa margem)</span>
+            </div>
+          </div>
+
+          <!-- Sugestão e Campo de Preço Praticado -->
+          <div class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-600">Preço Sugerido (CP / CMV):</span>
+              <strong id="precoSugeridoAbrasel" class="text-emerald-800 font-bold text-sm">R$ 3,48</strong>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-xs font-bold text-slate-800">Preço Praticado de Venda (Pv):</label>
+                <span class="text-[10px] text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded font-medium">Facilidade de Troco</span>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">R$</span>
+                <input type="number" id="inpPrecoVenda" value="4.00" step="0.50" min="1" class="w-full pl-9 pr-3 py-2 text-base font-extrabold text-emerald-900 bg-white border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+              </div>
+            </div>
+
+            <!-- Botões de Troco Rápido -->
+            <div class="flex gap-1.5 justify-end text-[11px]">
+              <span class="text-slate-400 self-center mr-1 text-[10px]">Sugestões:</span>
+              <button onclick="setPreco(3.50)" class="px-2 py-0.5 bg-white border border-emerald-300 rounded hover:bg-emerald-100 text-emerald-800 font-semibold transition">R$ 3,50</button>
+              <button onclick="setPreco(4.00)" class="px-2 py-0.5 bg-white border border-emerald-300 rounded hover:bg-emerald-100 text-emerald-800 font-semibold transition">R$ 4,00</button>
+              <button onclick="setPreco(5.00)" class="px-2 py-0.5 bg-white border border-emerald-300 rounded hover:bg-emerald-100 text-emerald-800 font-semibold transition">R$ 5,00</button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Seção de Expressões Algébricas & Inequação do Ponto de Equilíbrio -->
+    <section class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+      <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <span>📐</span> Modelagem Algébrica Formal e Resolução da Inequação
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Tradução dos parâmetros em funções de primeiro grau e determinação do limiar de lucratividade.
+          </p>
+        </div>
+        <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-3 py-1 rounded-full self-start">
+          Slides 11, 13, 14, 15 e 16
+        </span>
+      </div>
+
+      <!-- Grade com as Três Funções Matemáticas -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Função Custo -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">1. Função Custo Total</div>
+          <div class="text-sm font-semibold text-slate-700 font-mono mb-2">C(x) = C_v · x + C_f</div>
+          <div id="formulaCustoDinamica" class="text-base font-extrabold text-blue-700 font-mono bg-white p-2.5 rounded-lg border border-slate-200">
+            C(x) = 1,04x + 15,00
+          </div>
+          <p class="text-[11px] text-slate-500 mt-2">
+            Onde <strong>x</strong> é a quantidade produzida, <strong>CP</strong> é o custo unitário e <strong>Cf</strong> o custo fixo.
+          </p>
+        </div>
+
+        <!-- Função Receita -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">2. Função Receita Total</div>
+          <div class="text-sm font-semibold text-slate-700 font-mono mb-2">R(x) = P_v · x</div>
+          <div id="formulaReceitaDinamica" class="text-base font-extrabold text-emerald-700 font-mono bg-white p-2.5 rounded-lg border border-slate-200">
+            R(x) = 4,00x
+          </div>
+          <p class="text-[11px] text-slate-500 mt-2">
+            Onde <strong>Pv</strong> é o preço praticado de venda de cada pastel.
+          </p>
+        </div>
+
+        <!-- Função Lucro -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">3. Função Lucro Total</div>
+          <div class="text-sm font-semibold text-slate-700 font-mono mb-2">L(x) = R(x) - C(x)</div>
+          <div id="formulaLucroDinamica" class="text-base font-extrabold text-purple-700 font-mono bg-white p-2.5 rounded-lg border border-slate-200">
+            L(x) = 2,96x - 15,00
+          </div>
+          <p class="text-[11px] text-slate-500 mt-2">
+            Diferença líquida entre o faturamento e os custos operacionais totais.
+          </p>
+        </div>
+      </div>
+
+      <!-- Resolução Passo a Passo da Inequação (Slide 16) -->
+      <div class="bg-gradient-to-r from-purple-50 via-slate-50 to-amber-50 p-5 rounded-xl border border-purple-200 space-y-3">
+        <h3 class="text-sm font-bold text-purple-900 flex items-center gap-2">
+          <span>🎯</span> Resolução Algébrica: A partir de quantos pastéis vendidos obtém-se lucro?
+        </h3>
+        
+        <div class="font-mono text-xs sm:text-sm text-slate-800 space-y-1.5 bg-white p-4 rounded-lg border border-slate-200 shadow-inner">
+          <p>O lucro acontece quando a receita supera o custo total: <strong class="text-purple-700">L(x) &gt; 0</strong></p>
+          <p class="text-slate-600">R(x) - C(x) &gt; 0</p>
+          <p id="passoInequacao1">4,00x - (1,04x + 15,00) &gt; 0</p>
+          <p id="passoInequacao2">(4,00 - 1,04)x &gt; 15,00</p>
+          <p id="passoInequacao3">2,96x &gt; 15,00</p>
+          <p id="passoInequacao4">x &gt; 15,00 / 2,96 &nbsp;⟹&nbsp; <strong class="text-purple-800 text-base">x &gt; 5,08</strong></p>
+        </div>
+
+        <div class="flex items-center gap-3 p-3 bg-purple-100/70 rounded-lg border border-purple-300 text-xs sm:text-sm text-purple-950 font-semibold">
+          <span class="text-2xl">💡</span>
+          <div>
+            <span>Conclusão Matemática:</span>
+            <p id="conclusaoLucroTexto" class="font-bold text-purple-900">
+              Como a quantidade vendida é discreta (número natural), começa-se a obter lucro a partir da venda de <span class="underline text-purple-950 font-black">6 pastéis</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráfico Cartesiano & Tabela de Sensibilidade de Vendas -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Gráfico Cartesiano (Slide 17) -->
+      <section class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <span>📈</span> Representação Gráfica: Retas de Custo C(x) e Receita R(x)
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">O ponto de interseção indica graficamente o Ponto de Equilíbrio.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-medium">
+            <span class="text-slate-600">Alcance do Gráfico:</span>
+            <select id="selAlcanceGrafico" class="bg-slate-50 border border-slate-300 text-slate-800 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-amber-500">
+              <option value="15">15 pastéis</option>
+              <option value="25" selected>25 pastéis</option>
+              <option value="50">50 pastéis</option>
+              <option value="100">100 pastéis</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Canvas do Chart.js -->
+        <div class="relative w-full h-80 sm:h-96">
+          <canvas id="graficoPasteis"></canvas>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-6 pt-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-1 bg-blue-600 rounded"></span>
+            <span class="font-semibold text-slate-700">C(x) Custo Total</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-1 bg-emerald-600 rounded"></span>
+            <span class="font-semibold text-slate-700">R(x) Receita Total</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-purple-600 ring-2 ring-purple-300"></span>
+            <span class="font-semibold text-purple-800">Ponto de Equilíbrio (Cruzamento)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabela de Simulação de Vendas e Lucro (Slide 18) -->
+      <section class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <span>📑</span> Representação em Tabela (Slide 18)
+              </h2>
+              <p class="text-xs text-slate-500 mt-0.5">Comportamento financeiro por unidade produzida e vendida.</p>
+            </div>
+            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">1 a 20 un.</span>
+          </div>
+
+          <div class="overflow-y-auto max-h-[380px] mt-3 border border-slate-200 rounded-lg">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 text-slate-700 uppercase font-semibold sticky top-0 shadow-sm">
+                <tr>
+                  <th class="px-3 py-2 text-center">Qtd (x)</th>
+                  <th class="px-3 py-2">Custo C(x)</th>
+                  <th class="px-3 py-2">Receita R(x)</th>
+                  <th class="px-3 py-2 text-right">Lucro L(x)</th>
+                </tr>
+              </thead>
+              <tbody id="tbodySimulacaoLucro" class="divide-y divide-slate-100">
+                <!-- Linhas geradas via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+          <span class="text-base">📌</span>
+          <span>Linhas destacadas em <strong>verde</strong> representam operações lucrativas; linhas em <strong>vermelho</strong> representam prejuízo por insuficiência de escala.</span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Seção de Orientações Metodológicas & Conclusões Pedagógicas (Slide 19) -->
+    <section class="bg-slate-900 text-slate-200 p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+            <span>🎓</span> Orientações para a Pesquisa de Modelagem Matemática (Slide 19)
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Requisitos formais de validação acadêmica apresentados em aula no IFSC Câmpus Chapecó.
+          </p>
+        </div>
+        <span class="text-xs text-amber-300 font-semibold bg-amber-950/80 border border-amber-700 px-3 py-1 rounded-full self-start">
+          Relatório de Pesquisa
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs leading-relaxed">
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+            <span>1️⃣</span> Hipóteses e Simplificações
+          </h4>
+          <p class="text-slate-300">
+            Considerou-se rendimento uniforme de 15 pastéis por receita base. A água morna teve custo considerado zero. Desconsiderou-se perdas residuais de massa no rolo e pequenas variações na dosagem manual de temperos.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+            <span>2️⃣</span> Validação no Mundo Real
+          </h4>
+          <p class="text-slate-300">
+            O custo por pastel de <strong>~R$ 1,04</strong> e venda a <strong>R$ 4,00</strong> respeita rigorosamente a faixa da ABRASEL (CMV de ~26% a 30%), conferindo sustentabilidade comercial e margem para absorção de despesas operacionais.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+            <span>3️⃣</span> Adaptação para Outros Sabores
+          </h4>
+          <p class="text-slate-300">
+            O mesmo modelo algébrico aplica-se a novos recheios (queijo mussarela, frango desfiado com catupiry, palmito), bastando alterar os parâmetros de quantidade de recheio e preço de compra do quilo correspondente.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Rodapé Institucional -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 space-y-1">
+      <p>Desenvolvido para a pesquisa de <strong>Modelagem Matemática</strong> — Instituto Federal de Santa Catarina (IFSC Câmpus Chapecó).</p>
+      <p>Grupo: Brenda Dick, Caroline Matte, Eloisa dos Santos, Lucas Fernandes e Victor Peludo.</p>
+    </div>
+  </footer>
+
+  <!-- Lógica da Aplicação (Vanilla JS) -->
+  <script>
+    // --- 1. DADOS ORIGINAIS DA PESQUISA (modelagem.jpg) ---
+    const DADOS_ORIGINAIS = {
+      rendimento: 15,
+      custoFixoOperacional: 15.00,
+      cmvPercentual: 30,
+      precoVendaPraticado: 4.00,
+      modoCustoFixo: 'operacional', // 'operacional' | 'sobras'
+      massa: [
+        { id: 'farinha_massa', nome: 'Farinha de trigo (Dona Benta)', qtdReceita: 400, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 5.50, k: 0.40, simbolo: 'CF' },
+        { id: 'oleo_massa', nome: 'Óleo de soja', qtdReceita: 45, unidadeReceita: 'ml', qtdEmb: 900, unidadeEmb: 'ml', precoEmb: 7.50, k: 0.05, simbolo: 'CO_m' },
+        { id: 'sal_massa', nome: 'Sal refinado', qtdReceita: 12, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 3.00, k: 0.012, simbolo: 'CS_m' },
+        { id: 'cachaca_massa', nome: 'Cachaça', qtdReceita: 15, unidadeReceita: 'ml', qtdEmb: 960, unidadeEmb: 'ml', precoEmb: 15.00, k: 0.015625, simbolo: 'CCac' },
+        { id: 'agua_massa', nome: 'Água morna', qtdReceita: 240, unidadeReceita: 'ml', qtdEmb: 1000, unidadeEmb: 'ml', precoEmb: 0.00, k: 0.00, simbolo: 'CAg' }
+      ],
+      recheio: [
+        { id: 'patinho_recheio', nome: 'Carne (patinho moído)', qtdReceita: 200, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 55.00, k: 0.20, simbolo: 'CC' },
+        { id: 'oleo_recheio', nome: 'Óleo / Gordura para refoga', qtdReceita: 45, unidadeReceita: 'ml', qtdEmb: 900, unidadeEmb: 'ml', precoEmb: 7.50, k: 0.05, simbolo: 'CO_r' },
+        { id: 'tomate_recheio', nome: 'Tomate (1 un. média)', qtdReceita: 120, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 8.00, k: 0.12, simbolo: 'CT' },
+        { id: 'cebola_recheio', nome: 'Cebola (1/2 un. média)', qtdReceita: 50, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 6.00, k: 0.05, simbolo: 'CE' },
+        { id: 'alho_recheio', nome: 'Alho (1 dente)', qtdReceita: 5.14, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 35.00, k: 0.00514, simbolo: 'CA' },
+        { id: 'sal_recheio', nome: 'Sal para refoga', qtdReceita: 5, unidadeReceita: 'g', qtdEmb: 1000, unidadeEmb: 'g', precoEmb: 3.00, k: 0.005, simbolo: 'CS_r' }
+      ]
+    };
+
+    // Estado reativo da aplicação
+    let state = JSON.parse(JSON.stringify(DADOS_ORIGINAIS));
+    let chartInstance = null;
+
+    // Utilitário de formatação de moeda
+    function formatBRL(valor) {
+      return (Number(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Utilitário de formatação de número simples
+    function formatNum(valor, casas = 2) {
+      return (Number(valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+    }
+
+    // Inicialização da Tabela de Insumos no DOM
+    function renderTabelasInsumos() {
+      const tbodyM = document.getElementById('tbodyMassa');
+      const tbodyR = document.getElementById('tbodyRecheio');
+
+      tbodyM.innerHTML = state.massa.map(item => `
+        <tr class="hover:bg-amber-50/50 transition">
+          <td class="px-3 py-2 font-medium text-slate-800">${item.nome}</td>
+          <td class="px-3 py-2 text-slate-600">${item.qtdReceita} ${item.unidadeReceita}</td>
+          <td class="px-3 py-2 text-slate-500">${item.qtdEmb} ${item.unidadeEmb}</td>
+          <td class="px-3 py-2">
+            <div class="relative w-24">
+              <span class="absolute inset-y-0 left-0 pl-1.5 flex items-center text-[10px] text-slate-400">R$</span>
+              <input type="number" step="0.10" min="0" value="${item.precoEmb.toFixed(2)}"
+                onchange="atualizarPrecoInsumo('massa', '${item.id}', this.value)"
+                class="w-full pl-6 pr-1 py-0.5 text-xs font-semibold bg-slate-50 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 text-right">
+            </div>
+          </td>
+          <td class="px-3 py-2 text-center font-mono text-[11px] text-amber-900 bg-slate-50/50">
+            ${item.k > 0 ? `${item.simbolo} = ${item.k} · P` : 'Custo zero'}
+          </td>
+          <td class="px-3 py-2 text-right font-bold text-amber-900" id="custo_${item.id}">
+            R$ 0,00
+          </td>
+        </tr>
+      `).join('');
+
+      tbodyR.innerHTML = state.recheio.map(item => `
+        <tr class="hover:bg-rose-50/50 transition">
+          <td class="px-3 py-2 font-medium text-slate-800">${item.nome}</td>
+          <td class="px-3 py-2 text-slate-600">${item.qtdReceita} ${item.unidadeReceita}</td>
+          <td class="px-3 py-2 text-slate-500">${item.qtdEmb} ${item.unidadeEmb}</td>
+          <td class="px-3 py-2">
+            <div class="relative w-24">
+              <span class="absolute inset-y-0 left-0 pl-1.5 flex items-center text-[10px] text-slate-400">R$</span>
+              <input type="number" step="0.10" min="0" value="${item.precoEmb.toFixed(2)}"
+                onchange="atualizarPrecoInsumo('recheio', '${item.id}', this.value)"
+                class="w-full pl-6 pr-1 py-0.5 text-xs font-semibold bg-slate-50 border border-slate-300 rounded focus:ring-1 focus:ring-rose-500 text-right">
+            </div>
+          </td>
+          <td class="px-3 py-2 text-center font-mono text-[11px] text-rose-900 bg-slate-50/50">
+            ${item.k > 0 ? `${item.simbolo} = ${item.k} · P` : 'Custo zero'}
+          </td>
+          <td class="px-3 py-2 text-right font-bold text-rose-900" id="custo_${item.id}">
+            R$ 0,00
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Atualização de preço de um insumo pelo usuário
+    function atualizarPrecoInsumo(categoria, id, novoPreco) {
+      const lista = categoria === 'massa' ? state.massa : state.recheio;
+      const item = lista.find(x => x.id === id);
+      if (item) {
+        item.precoEmb = Math.max(0, parseFloat(novoPreco) || 0);
+        calcularEAtualizarTudo();
+      }
+    }
+
+    // Botões de Troco Rápido
+    function setPreco(valor) {
+      document.getElementById('inpPrecoVenda').value = Number(valor).toFixed(2);
+      state.precoVendaPraticado = Number(valor);
+      calcularEAtualizarTudo();
+    }
+
+    // Alternância do Modo de Custo Fixo
+    function configurarModosCustoFixo() {
+      const btnOp = document.getElementById('tabModoOperacional');
+      const btnSob = document.getElementById('tabModoSobras');
+      const painelOp = document.getElementById('painelOperacional');
+      const painelSob = document.getElementById('painelSobras');
+
+      btnOp.addEventListener('click', () => {
+        state.modoCustoFixo = 'operacional';
+        btnOp.className = 'py-1.5 px-2 rounded-md bg-white text-blue-700 shadow-sm transition';
+        btnSob.className = 'py-1.5 px-2 rounded-md text-slate-600 hover:text-slate-900 transition';
+        painelOp.classList.remove('hidden');
+        painelSob.classList.add('hidden');
+        document.getElementById('kpiCfTipo').textContent = 'Custo Fixo Operacional';
+        calcularEAtualizarTudo();
+      });
+
+      btnSob.addEventListener('click', () => {
+        state.modoCustoFixo = 'sobras';
+        btnSob.className = 'py-1.5 px-2 rounded-md bg-white text-blue-700 shadow-sm transition';
+        btnOp.className = 'py-1.5 px-2 rounded-md text-slate-600 hover:text-slate-900 transition';
+        painelSob.classList.remove('hidden');
+        painelOp.classList.add('hidden');
+        document.getElementById('kpiCfTipo').textContent = 'Sobras de Embalagem (Slide 12)';
+        calcularEAtualizarTudo();
+      });
+    }
+
+    // Cálculo central da modelagem matemática
+    function calcularEAtualizarTudo() {
+      const rendimento = Math.max(1, parseInt(document.getElementById('inpRendimento').value) || 15);
+      state.rendimento = rendimento;
+
+      // 1. Custos Proporcionais da Massa
+      let subtotalM = 0;
+      let sobrasItens = [];
+      let totalSobraFinanceira = 0;
+
+      state.massa.forEach(item => {
+        const custoItem = item.k * item.precoEmb;
+        subtotalM += custoItem;
+        const el = document.getElementById(`custo_${item.id}`);
+        if (el) el.textContent = formatBRL(custoItem);
+
+        // Cálculo da sobra de embalagem (slide 12)
+        const sobraQtd = Math.max(0, item.qtdEmb - item.qtdReceita);
+        const valorSobra = (sobraQtd / item.qtdEmb) * item.precoEmb;
+        if (item.precoEmb > 0 && sobraQtd > 0) {
+          sobrasItens.push({ nome: item.nome, sobraQtd, unidade: item.unidadeReceita, valorSobra });
+          totalSobraFinanceira += valorSobra;
+        }
+      });
+
+      // 2. Custos Proporcionais do Recheio
+      let subtotalR = 0;
+      state.recheio.forEach(item => {
+        const custoItem = item.k * item.precoEmb;
+        subtotalR += custoItem;
+        const el = document.getElementById(`custo_${item.id}`);
+        if (el) el.textContent = formatBRL(custoItem);
+
+        const sobraQtd = Math.max(0, item.qtdEmb - item.qtdReceita);
+        const valorSobra = (sobraQtd / item.qtdEmb) * item.precoEmb;
+        if (item.precoEmb > 0 && sobraQtd > 0) {
+          sobrasItens.push({ nome: item.nome, sobraQtd, unidade: item.unidadeReceita, valorSobra });
+          totalSobraFinanceira += valorSobra;
+        }
+      });
+
+      // Atualiza lista de sobras no DOM
+      const listaSobrasEl = document.getElementById('listaSobras');
+      if (listaSobrasEl) {
+        listaSobrasEl.innerHTML = sobrasItens.map(s => `
+          <div class="flex justify-between py-1">
+            <span>${s.nome} (${formatNum(s.sobraQtd, 1)}${s.unidade}):</span>
+            <span class="font-semibold text-slate-700">${formatBRL(s.valorSobra)}</span>
+          </div>
+        `).join('');
+        document.getElementById('totalSobrasTexto').textContent = formatBRL(totalSobraFinanceira);
+      }
+
+      // Subtotais e Custo Variável Unitário (CP)
+      const custoTotalReceita = subtotalM + subtotalR;
+      const cp = custoTotalReceita / rendimento;
+
+      document.getElementById('subtotalMassa').textContent = formatBRL(subtotalM);
+      document.getElementById('subtotalRecheio').textContent = formatBRL(subtotalR);
+      document.getElementById('custoTotalReceita').textContent = formatBRL(custoTotalReceita);
+      document.getElementById('custoUnitarioCalculado').textContent = formatBRL(cp);
+
+      // KPI CP
+      document.getElementById('kpiCp').textContent = formatBRL(cp);
+      document.getElementById('kpiTotalReceita').textContent = formatNum(custoTotalReceita, 2);
+      document.getElementById('kpiRendimento').textContent = rendimento;
+
+      // 3. Custo Fixo (Cf)
+      const custoFixoOp = parseFloat(document.getElementById('inpCustoFixoOperacional').value) || 0;
+      const cfAtivo = state.modoCustoFixo === 'sobras' ? totalSobraFinanceira : custoFixoOp;
+      document.getElementById('valorCfAtivo').textContent = formatBRL(cfAtivo);
+      document.getElementById('kpiCf').textContent = formatBRL(cfAtivo);
+
+      // 4. Margem ABRASEL e Preço de Venda
+      const cmvPercentual = parseInt(document.getElementById('sliderCmv').value) || 30;
+      document.getElementById('txtCmvPercentual').textContent = `${cmvPercentual}%`;
+
+      const precoSugeridoAbrasel = cp / (cmvPercentual / 100);
+      document.getElementById('precoSugeridoAbrasel').textContent = formatBRL(precoSugeridoAbrasel);
+
+      const pv = Math.max(0.01, parseFloat(document.getElementById('inpPrecoVenda').value) || 4.00);
+      state.precoVendaPraticado = pv;
+      const margemContribuicao = pv - cp;
+
+      document.getElementById('kpiPv').textContent = formatBRL(pv);
+      document.getElementById('kpiMargem').textContent = formatNum(margemContribuicao, 2);
+
+      // 5. Inequação do Ponto de Equilíbrio (Break-Even)
+      let breakEvenExato = 0;
+      let breakEvenInteiro = 0;
+
+      if (margemContribuicao > 0) {
+        breakEvenExato = cfAtivo / margemContribuicao;
+        breakEvenInteiro = Math.floor(breakEvenExato) + 1; // inteiro estritamente maior
+        document.getElementById('kpiBreakEven').textContent = `${breakEvenInteiro} pastéis`;
+        document.getElementById('kpiBreakEvenExato').textContent = formatNum(breakEvenExato, 2);
+      } else {
+        document.getElementById('kpiBreakEven').textContent = 'Inviável';
+        document.getElementById('kpiBreakEvenExato').textContent = 'Pv ≤ CP';
+      }
+
+      // Atualização das Expressões Matemáticas Formais
+      document.getElementById('formulaCustoDinamica').textContent = `C(x) = ${formatNum(cp, 2)}x + ${formatNum(cfAtivo, 2)}`;
+      document.getElementById('formulaReceitaDinamica').textContent = `R(x) = ${formatNum(pv, 2)}x`;
+      document.getElementById('formulaLucroDinamica').textContent = `L(x) = ${formatNum(margemContribuicao, 2)}x - ${formatNum(cfAtivo, 2)}`;
+
+      // Atualização do Passo a Passo Algébrico
+      document.getElementById('passoInequacao1').textContent = `${formatNum(pv, 2)}x - (${formatNum(cp, 2)}x + ${formatNum(cfAtivo, 2)}) > 0`;
+      document.getElementById('passoInequacao2').textContent = `(${formatNum(pv, 2)} - ${formatNum(cp, 2)})x > ${formatNum(cfAtivo, 2)}`;
+      document.getElementById('passoInequacao3').textContent = `${formatNum(margemContribuicao, 2)}x > ${formatNum(cfAtivo, 2)}`;
+      document.getElementById('passoInequacao4').innerHTML = `x > ${formatNum(cfAtivo, 2)} / ${formatNum(margemContribuicao, 2)} &nbsp;⟹&nbsp; <strong class="text-purple-800 text-base">x > ${formatNum(breakEvenExato, 2)}</strong>`;
+
+      if (margemContribuicao > 0) {
+        document.getElementById('conclusaoLucroTexto').innerHTML = `Como a quantidade vendida é uma variável discreta inteira, começa-se a obter lucro a partir da venda de <span class="underline text-purple-950 font-black">${breakEvenInteiro} pastéis</span>.`;
+      } else {
+        document.getElementById('conclusaoLucroTexto').innerHTML = `<span class="text-red-700">Atenção: O preço de venda (R$ ${formatNum(pv, 2)}) é menor ou igual ao custo unitário (R$ ${formatNum(cp, 2)}), gerando prejuízo em qualquer volume. Aumente o preço de venda!</span>`;
+      }
+
+      // 6. Atualização da Tabela de Simulação (1 a 20 pastéis)
+      atualizarTabelaSimulacao(cp, cfAtivo, pv, breakEvenInteiro);
+
+      // 7. Atualização do Gráfico Cartesiano
+      const limiteGrafico = parseInt(document.getElementById('selAlcanceGrafico').value) || 25;
+      atualizarGrafico(cp, cfAtivo, pv, limiteGrafico, breakEvenExato);
+    }
+
+    // Tabela de Simulação de Vendas e Lucro (Slide 18)
+    function atualizarTabelaSimulacao(cp, cf, pv, breakEvenInteiro) {
+      const tbody = document.getElementById('tbodySimulacaoLucro');
+      let html = '';
+
+      for (let x = 1; x <= 20; x++) {
+        const custoTotal = (cp * x) + cf;
+        const receitaTotal = pv * x;
+        const lucro = receitaTotal - custoTotal;
+
+        const isLucro = lucro > 0.0001;
+        const isBreakEven = x === breakEvenInteiro;
+
+        const bgClass = isBreakEven 
+          ? 'bg-purple-100 font-bold border-l-4 border-purple-600'
+          : (isLucro ? 'bg-emerald-50/50' : 'bg-red-50/50');
+        const textLucroClass = isLucro ? 'text-emerald-700 font-bold' : 'text-red-700 font-semibold';
+
+        html += `
+          <tr class="${bgClass} hover:opacity-90 transition">
+            <td class="px-3 py-1.5 text-center font-bold text-slate-800">
+              ${x} ${isBreakEven ? '⭐' : ''}
+            </td>
+            <td class="px-3 py-1.5 text-slate-700">${formatBRL(custoTotal)}</td>
+            <td class="px-3 py-1.5 text-slate-700">${formatBRL(receitaTotal)}</td>
+            <td class="px-3 py-1.5 text-right ${textLucroClass}">
+              ${formatBRL(lucro)}
+            </td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    // Gráfico Cartesiano com Chart.js
+    function atualizarGrafico(cp, cf, pv, maxPastéis, breakEvenExato) {
+      const ctx = document.getElementById('graficoPasteis').getContext('2d');
+
+      const labels = [];
+      const dadosCusto = [];
+      const dadosReceita = [];
+
+      for (let x = 0; x <= maxPastéis; x++) {
+        labels.push(x);
+        dadosCusto.push((cp * x) + cf);
+        dadosReceita.push(pv * x);
+      }
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'C(x) Custo Total',
+              data: dadosCusto,
+              borderColor: '#2563eb', // blue-600
+              backgroundColor: 'rgba(37, 99, 235, 0.05)',
+              borderWidth: 2.5,
+              tension: 0.1,
+              pointRadius: 2
+            },
+            {
+              label: 'R(x) Receita Total',
+              data: dadosReceita,
+              borderColor: '#059669', // emerald-600
+              backgroundColor: 'rgba(5, 150, 105, 0.05)',
+              borderWidth: 2.5,
+              tension: 0.1,
+              pointRadius: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${formatBRL(context.parsed.y)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Quantidade de Pastéis Produzidos e Vendidos (x)',
+                font: { size: 11, weight: 'bold' }
+              },
+              grid: { color: '#f1f5f9' }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Valor em Reais (R$)',
+                font: { size: 11, weight: 'bold' }
+              },
+              ticks: {
+                callback: function(value) {
+                  return 'R$ ' + value;
+                }
+              },
+              grid: { color: '#f1f5f9' }
+            }
+          }
+        }
+      });
+    }
+
+    // Inicialização da Página e Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTabelasInsumos();
+      configurarModosCustoFixo();
+
+      // Listeners de Inputs
+      document.getElementById('inpRendimento').addEventListener('input', calcularEAtualizarTudo);
+      document.getElementById('inpCustoFixoOperacional').addEventListener('input', calcularEAtualizarTudo);
+      document.getElementById('sliderCmv').addEventListener('input', calcularEAtualizarTudo);
+      document.getElementById('inpPrecoVenda').addEventListener('input', calcularEAtualizarTudo);
+      document.getElementById('selAlcanceGrafico').addEventListener('change', calcularEAtualizarTudo);
+
+      // Botão Restaurar
+      document.getElementById('btnRestaurar').addEventListener('click', () => {
+        state = JSON.parse(JSON.stringify(DADOS_ORIGINAIS));
+        document.getElementById('inpRendimento').value = state.rendimento;
+        document.getElementById('inpCustoFixoOperacional').value = state.custoFixoOperacional.toFixed(2);
+        document.getElementById('sliderCmv').value = state.cmvPercentual;
+        document.getElementById('inpPrecoVenda').value = state.precoVendaPraticado.toFixed(2);
+        renderTabelasInsumos();
+        document.getElementById('tabModoOperacional').click();
+        calcularEAtualizarTudo();
+      });
+
+      // Primeiro Cálculo
+      calcularEAtualizarTudo();
+    });
+  </script>
+</body>
+</html>

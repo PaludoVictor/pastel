@@ -1,0 +1,65 @@
+================================================================================
+REGISTRO DE DESENVOLVIMENTO - PESQUISA DE MODELAGEM MATEMÁTICA (IFSC CHAPECÓ)
+Projeto: Precificação de um Pastel
+Curso: Técnico em Informática | Disciplina: Matemática
+================================================================================
+
+[CICLO 1 - LEVANTAMENTO DE REQUISITOS E PLANEJAMENTO]
+Data/Hora: 16/11/2026 - 16:30
+
+1. PROMPT DO USUÁRIO:
+"Estou participando de uma pesquisa de modelagem matematica voltado ao ensino medio tecnico em informatica e preciso desenvolver um software simples (vamos usar tailwind e js) para o precificação de um pastel. No arquivo @modelagem.jpg tem as informações levantadas pelo grupo, siga fielmente oque foi previamente definifo no arquivo. Para transformar os dados em modelagem acurada vamos seguir o arquivo apresentado em aula @apresentacao.pdf como referencia de regras, formulas.... 
+
+Além disso preciso registrar oque foi feito e como para o desenvolvimento da pesquisa, para isso no arquivo @[c:\Users\Aluno\Downloads\pastel\registros.txt] registre o meu prompt, oque você fez e as entregas (quais arquivos foram criados, editados ou removidos)  
+
+Vamos criar um planejamento, levantando todos os requisitos e pergunte qualquer duvida, depois de aprovado o plano vamos criar o software."
+
+2. O QUE FOI FEITO E COMO:
+- Inspeção e leitura visual minuciosa do documento manuscrito `modelagem.jpg` produzido pelos alunos Brenda, Caroline, Eloisa, Lucas e Victor (IFSC Câmpus Chapecó).
+  * Extração das quantidades da receita base (massa e recheio para 15 pastéis).
+  * Extração dos preços de compra de cada insumo no mercado.
+  * Validação das regras de três e proporções calculadas pelo grupo (Massa: R$ 2,85 | Recheio: R$ 12,83 | Total 15 pastéis: R$ 15,68 | Custo por pastel: ~R$ 1,04).
+- Análise completa do documento orientador `apresentacao.pdf` (19 slides):
+  * Extração da metodologia de modelagem: identificação de variáveis independentes (preços de mercado) e dependentes (custo do ingrediente na receita).
+  * Definição da constante de proporcionalidade k = (qtd_usada / qtd_embalagem).
+  * Padronização de unidades de medidas físicas (g, ml, kg, L) eliminando termos subjetivos.
+  * Formulação do Custo Variável Unitário CP = (Soma C_i) / Rendimento.
+  * Modelagem de Custos Fixos (ilustrado na aula como ingredientes comprados e não utilizados no lote).
+  * Modelagem de Custo Total: C(x) = CP * x + Cf.
+  * Modelagem de Preço de Venda via margem CMV da ABRASEL (25% a 40%) com arredondamento para troco.
+  * Modelagem de Receita R(x) = Pv * x.
+  * Modelagem de Lucro e Inequação Algébrica para o Ponto de Equilíbrio (Break-Even): L(x) = R(x) - C(x) > 0.
+  * Especificação dos formatos de saída requeridos na aula: Simulação de parâmetros, Tabela de sensibilidade de lucro e Representação Gráfica cartesiana das funções C(x) e R(x).
+- Elaboração do Documento de Planejamento de Software e Modelagem Matemática, contendo a arquitetura técnica em HTML5 + Tailwind CSS + Vanilla JS, layout responsivo e interativo, e levantamento de pontos para confirmação com o usuário.
+
+3. ENTREGAS:
+- Arquivo editado: `registros.txt` (inicialização do log da pesquisa).
+- Artefato criado: `planejamento_software_pastel.md` (Plano detalhado de modelagem, arquitetura do software e formulário de validação com o usuário).
+================================================================================
+
+
+[CICLO 2 - DESENVOLVIMENTO E ENTREGA DO SOFTWARE]
+Data/Hora: 16/11/2026 - 16:58
+
+1. PROMPT / DECISÕES DO USUÁRIO:
+- Estrutura de arquivos aprovada: Arquivo único `index.html` (Tailwind via CDN + JS integrados, executável diretamente sem dependência de build/Node.js).
+- Modelagem de Custo Fixo (Cf) aprovada: Modo Duplo interativo (alternância entre Custo das Sobras de embalagens do slide 12 e Custo Operacional fixo).
+
+2. O QUE FOI FEITO E COMO:
+- Desenvolvimento do software completo em `index.html` integrando HTML5 semântico, Tailwind CSS e Vanilla JavaScript ES6+.
+- Estruturação dos dados e fórmulas com máxima fidelidade aos arquivos da pesquisa:
+  * Insumos da massa e recheio parametrizados conforme `modelagem.jpg` para a receita de 15 pastéis.
+  * Fórmulas lineares explícitas C_i = k_i * P_i demonstrando a constante de proporcionalidade de cada insumo.
+  * Cálculo dinâmico do Custo Variável Unitário (CP).
+  * Modo Duplo de Custo Fixo com cálculo automático das sobras físicas e financeiras de insumo (slide 12) e modo de custo operacional.
+  * Módulo comercial baseado na cartilha ABRASEL (slide 14) com slider de CMV (25% a 40%) e botões de arredondamento de troco.
+  * Painel algébrico demonstrando formalmente as funções C(x), R(x), L(x) e a resolução passo a passo da inequação de Break-even (slide 16).
+  * Gráfico cartesiano interativo via Chart.js com as retas de Custo e Receita e ponto de interseção destacado (slide 17).
+  * Tabela de sensibilidade de vendas de 1 a 20 unidades com coloração condicional de lucro e prejuízo (slide 18).
+  * Bloco didático de orientações para apresentação da pesquisa (slide 19) com hipóteses, validações e generalizações.
+  * Função de restauração instantânea dos dados originais da pesquisa e suporte à impressão/exportação.
+
+3. ENTREGAS:
+- Arquivo criado: `c:\Users\Aluno\Downloads\pastel\index.html` (software completo, interativo e responsivo).
+- Arquivo editado: `c:\Users\Aluno\Downloads\pastel\registros.txt` (atualização do registro de desenvolvimento da pesquisa).
+================================================================================
